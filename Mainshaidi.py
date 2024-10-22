@@ -4,6 +4,9 @@ from tkinter.messagebox import showinfo
 from datetime import datetime
 from interface_graphique.departement_front import DepartementGestFrontend
 from interface_graphique.agent_front import AgentGestFrontend
+from interface_graphique.bareme_interrfaxe import BaremeSalarialeGestFrontend
+from interface_graphique.fonction_interface import FonctionGestFrontend
+from interface_graphique.affectation_interface import AffectationGestFrontend
 from backend.connexion import Connexion
 
 class GRHManagementApp:
@@ -115,9 +118,7 @@ class GRHManagementApp:
     # Méthode pour afficher le contenu du portail Barème salarial
     def show_bareme_salariale_portal(self):
         self.clear_main_frame()
-        bareme_label = tk.Label(self.main_frame, text="Portail de Barème Salariale", font=('Helvetica', 18))
-        bareme_label.pack(pady=20)
-
+        BaremeSalarialeGestFrontend(self.main_frame, self.conexion.get_curseur())
     # Méthode pour afficher le contenu du portail Paie
     def show_paie_portal(self):
         self.clear_main_frame()
@@ -127,9 +128,7 @@ class GRHManagementApp:
     # Méthode pour afficher le contenu du portail Affecter
     def show_affecter_portal(self):
         self.clear_main_frame()
-        affecter_label = tk.Label(self.main_frame, text="Portail d'Affectation", font=('Helvetica', 18))
-        affecter_label.pack(pady=20)
-
+        AffectationGestFrontend(self.main_frame,self.conexion.get_curseur())
     # Méthode pour afficher le contenu du portail Pointer
     def show_pointer_portal(self):
         self.clear_main_frame()
@@ -155,8 +154,7 @@ class GRHManagementApp:
     # Méthode pour afficher le contenu du portail Fonction
     def show_fonction_portal(self):
         self.clear_main_frame()
-        fonction_label = tk.Label(self.main_frame, text="Portail de Fonction", font=('Helvetica', 18))
-        fonction_label.pack(pady=20)
+        FonctionGestFrontend(self.main_frame,self.conexion.get_curseur())
 
     # Méthode pour effacer le contenu précédent dans main_frame
     def clear_main_frame(self):

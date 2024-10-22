@@ -168,21 +168,3 @@ class DepartementGestFrontend:
     # Méthode pour imprimer tous les départements
     def imprimer_departement(self):
         pass
-
-# Exemple d'utilisation
-if __name__ == "__main__":
-    root = tk.Tk()
-    root.title("Gestion des Départements")
-    root.geometry("800x800")
-    
-    # Connexion à la base de données
-    import mysql.connector
-    conn = mysql.connector.connect(user='votre_utilisateur', password='votre_mot_de_passe', host='localhost', database='votre_base_de_donnees')
-    curseur = conn.cursor()
-
-    app = DepartementGestFrontend(root, curseur)
-    root.mainloop()
-
-    # Fermeture de la connexion
-    curseur.close()
-    conn.close()
