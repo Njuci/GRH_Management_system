@@ -64,7 +64,7 @@ class AgentGestFrontend:
         self.Ajouter_btn = tk.Button(self.AgentSection, bg=self.succes_colors, text='AJOUTER', fg='white', relief="flat", font="Arial 9", command=self.ajouter_agent)
         self.Ajouter_btn.place(x=200, y=270, width=100, height=30)
 
-        self.Supprimer_btn = tk.Button(self.AgentSection, bg='red', text='SUPPRIMER', fg='white', relief="flat", font="Arial 9")
+        self.Supprimer_btn = tk.Button(self.AgentSection, bg='red', text='SUPPRIMER', fg='white', relief="flat", font="Arial 9",command=self.supprimer_agent)
         self.Supprimer_btn.place(x=310, y=270, width=100, height=30)
 
         # Section du tableau
@@ -214,17 +214,41 @@ class AgentGestFrontend:
             showinfo('Erreur', 'Format de date incorrect (attendu : YYYY-MM-DD)')
             return
 
-        # Récupérer l'ID de l'agent sélectionné
-        selected_item = self.tableau.selection()[0]
-        agent_id = self.tableau.item(selected_item, 'values')[1]
-
-        # Mettre à jour l'agent
-        assign = Agent(nom, sexe, date_naissance, lieu_naissance, etat_civil, adresse, enfants)
-        assign.update(agent_id, self.curseur)
+        id =self.get_selected_agent_id()
+        if id is not None:
+            agent = Agent(nom, sexe, date_naissance, lieu_naissance, etat_civil, adresse, enfants)
+            if agent.update(self.curseur, id):
+                showinfo('Succès', 'Agent modifié avec succès')
+            
 
         # Afficher les agents
         self.afficher()
         self.clean()
+    def get_selected_agent_id(self):
+        try:
+            # Vérifie s'il y a une sélection
+            selected_item = self.tableau.selection()
+            
+            if not selected_item:
+                showinfo("Aucune sélection", "Veuillez sélectionner une ligne.")
+                return None
+
+            # Si une ligne est sélectionnée, récupérer l'ID de l'agent
+            selected_item = selected_item[0]  # Prendre le premier élément sélectionné
+            agent_id = self.tableau.item(selected_item, 'values')[1]
+            return agent_id
+
+        except IndexError:
+            showinfo("Erreur", "La sélection est invalide.")
+            return None
+    def supprimer_agent(self):
+        id = self.get_selected_agent_id()
+        if id is not None:
+            agent = Agent("", "", "", "", "", "", "")
+            if agent.delete(self.curseur, id):
+                showinfo('Succès', 'Agent supprimé avec succès')
+                self.afficher()
+                self.clean()
      # Méthode pour imprimer tous les agents
     def imprimer_agent(self):
         pass    

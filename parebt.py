@@ -2,16 +2,17 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter.messagebox import showinfo
 from datetime import datetime
+from interface_graphique.departement_front import DepartementGestFrontend
 from interface_graphique.agent_front import AgentGestFrontend
 from backend.connexion import Connexion
+
 class GRHManagementApp:
     def __init__(self, root):
         self.root = root
         self.root.geometry('1000x700')
-        #self.root.resizable(False, False)
         self.root.title('GRH Management')
-        self.conexion=Connexion()
-
+        self.conexion = Connexion()
+        
         # Couleurs
         self.fontground = '#27B795'
         self.bg = '#FFFFFF'
@@ -33,28 +34,50 @@ class GRHManagementApp:
         # Boutons et indicateurs pour chaque option
         self.hom_button = tk.Button(self.options_frame, text="Agent", bg=self.fontground, fg='white', command=lambda: self.on_option_selected(self.hom_indicate, self.show_agent_portal))
         self.hom_button.place(x=10, y=50, width=150, height=40)
-        self.hom_indicate = tk.Label(self.options_frame, text="", bg=self.fontground)
+        self.hom_indicate = tk.Label(self.options_frame, text="", bg=self.bg)
         self.hom_indicate.place(x=3, y=50, width=4, height=40)
 
-        self.femme_button = tk.Button(self.options_frame, text="Barème salariale", bg=self.fontground, fg='white', command=lambda: self.on_option_selected(self.femme_indicate, self.show_bareme_salariale_portal))
-        self.femme_button.place(x=10, y=100, width=150, height=40)
-        self.femme_indicate = tk.Label(self.options_frame, text="", bg=self.fontground)
-        self.femme_indicate.place(x=3, y=100, width=4, height=40)
+        self.bareme_button = tk.Button(self.options_frame, text="Barème Salarial", bg=self.fontground, fg='white', command=lambda: self.on_option_selected(self.bareme_indicate, self.show_bareme_salariale_portal))
+        self.bareme_button.place(x=10, y=100, width=150, height=40)
+        self.bareme_indicate = tk.Label(self.options_frame, text="", bg=self.bg)
+        self.bareme_indicate.place(x=3, y=100, width=4, height=40)
 
-        self.conge_button = tk.Button(self.options_frame, text="Congé", bg=self.fontground, fg='white', command=lambda: self.on_option_selected(self.conge_indicate, self.show_conge_portal))
-        self.conge_button.place(x=10, y=150, width=150, height=40)
-        self.conge_indicate = tk.Label(self.options_frame, text="", bg=self.fontground)
-        self.conge_indicate.place(x=3, y=150, width=4, height=40)
+        self.paie_button = tk.Button(self.options_frame, text="Paie", bg=self.fontground, fg='white', command=lambda: self.on_option_selected(self.paie_indicate, self.show_paie_portal))
+        self.paie_button.place(x=10, y=150, width=150, height=40)
+        self.paie_indicate = tk.Label(self.options_frame, text="", bg=self.bg)
+        self.paie_indicate.place(x=3, y=150, width=4, height=40)
 
-        self.salaire_button = tk.Button(self.options_frame, text="Paie", bg=self.fontground, fg='white', command=lambda: self.on_option_selected(self.salaire_indicate, self.show_paie_portal))
-        self.salaire_button.place(x=10, y=200, width=150, height=40)
-        self.salaire_indicate = tk.Label(self.options_frame, text="", bg=self.fontground)
-        self.salaire_indicate.place(x=3, y=200, width=4, height=40)
+        # Ajout des nouvelles options pour les tables
+        self.affecter_button = tk.Button(self.options_frame, text="Affecter", bg=self.fontground, fg='white', command=lambda: self.on_option_selected(self.affecter_indicate, self.show_affecter_portal))
+        self.affecter_button.place(x=10, y=200, width=150, height=40)
+        self.affecter_indicate = tk.Label(self.options_frame, text="", bg=self.bg)
+        self.affecter_indicate.place(x=3, y=200, width=4, height=40)
 
-        self.demission_button = tk.Button(self.options_frame, text="Démission", bg=self.fontground, fg='white', command=lambda: self.on_option_selected(self.demission_indicate, self.show_demission_portal))
-        self.demission_button.place(x=10, y=250, width=150, height=40)
-        self.demission_indicate = tk.Label(self.options_frame, text="", bg=self.fontground)
-        self.demission_indicate.place(x=3, y=250, width=4, height=40)
+        self.pointer_button = tk.Button(self.options_frame, text="Pointer", bg=self.fontground, fg='white', command=lambda: self.on_option_selected(self.pointer_indicate, self.show_pointer_portal))
+        self.pointer_button.place(x=10, y=250, width=150, height=40)
+        self.pointer_indicate = tk.Label(self.options_frame, text="", bg=self.bg)
+        self.pointer_indicate.place(x=3, y=250, width=4, height=40)
+
+        self.performance_button = tk.Button(self.options_frame, text="Performance", bg=self.fontground, fg='white', command=lambda: self.on_option_selected(self.performance_indicate, self.show_performance_portal))
+        self.performance_button.place(x=10, y=300, width=150, height=40)
+        self.performance_indicate = tk.Label(self.options_frame, text="", bg=self.bg)
+        self.performance_indicate.place(x=3, y=300, width=4, height=40)
+
+        self.grh_button = tk.Button(self.options_frame, text="GRH", bg=self.fontground, fg='white', command=lambda: self.on_option_selected(self.grh_indicate, self.show_grh_portal))
+        self.grh_button.place(x=10, y=350, width=150, height=40)
+        self.grh_indicate = tk.Label(self.options_frame, text="", bg=self.bg)
+        self.grh_indicate.place(x=3, y=350, width=4, height=40)
+
+        # Ajout des nouvelles options pour Département et Fonction
+        self.departement_button = tk.Button(self.options_frame, text="Département", bg=self.fontground, fg='white', command=lambda: self.on_option_selected(self.departement_indicate, self.show_departement_portal))
+        self.departement_button.place(x=10, y=400, width=150, height=40)
+        self.departement_indicate = tk.Label(self.options_frame, text="", bg=self.bg)
+        self.departement_indicate.place(x=3, y=400, width=4, height=40)
+
+        self.fonction_button = tk.Button(self.options_frame, text="Fonction", bg=self.fontground, fg='white', command=lambda: self.on_option_selected(self.fonction_indicate, self.show_fonction_portal))
+        self.fonction_button.place(x=10, y=450, width=150, height=40)
+        self.fonction_indicate = tk.Label(self.options_frame, text="", bg=self.bg)
+        self.fonction_indicate.place(x=3, y=450, width=4, height=40)
 
         # Main Frame
         self.main_frame = tk.Frame(self.root, bg=self.bg)
@@ -65,10 +88,14 @@ class GRHManagementApp:
     # Masquer tous les indicateurs
     def hide_all(self):
         self.hom_indicate.config(bg=self.bg)
-        self.femme_indicate.config(bg=self.bg)
-        self.conge_indicate.config(bg=self.bg)
-        self.salaire_indicate.config(bg=self.bg)
-        self.demission_indicate.config(bg=self.bg)
+        self.bareme_indicate.config(bg=self.bg)
+        self.paie_indicate.config(bg=self.bg)
+        self.affecter_indicate.config(bg=self.bg)
+        self.pointer_indicate.config(bg=self.bg)
+        self.performance_indicate.config(bg=self.bg)
+        self.grh_indicate.config(bg=self.bg)
+        self.departement_indicate.config(bg=self.bg)
+        self.fonction_indicate.config(bg=self.bg)
 
     # Indiquer l'option sélectionnée et appeler la fonction correspondante
     def on_option_selected(self, label, show_portal_func):
@@ -83,19 +110,13 @@ class GRHManagementApp:
     # Méthode pour afficher le contenu du portail agent
     def show_agent_portal(self):
         self.clear_main_frame()
-        AgentGestFrontend(self.main_frame,self.conexion.get_curseur())
+        AgentGestFrontend(self.main_frame, self.conexion.get_curseur())
         
-    # Méthode pour afficher le contenu du portail Barème salariale
+    # Méthode pour afficher le contenu du portail Barème salarial
     def show_bareme_salariale_portal(self):
         self.clear_main_frame()
         bareme_label = tk.Label(self.main_frame, text="Portail de Barème Salariale", font=('Helvetica', 18))
         bareme_label.pack(pady=20)
-
-    # Méthode pour afficher le contenu du portail Congé
-    def show_conge_portal(self):
-        self.clear_main_frame()
-        conge_label = tk.Label(self.main_frame, text="Portail de Congé", font=('Helvetica', 18))
-        conge_label.pack(pady=20)
 
     # Méthode pour afficher le contenu du portail Paie
     def show_paie_portal(self):
@@ -103,11 +124,39 @@ class GRHManagementApp:
         paie_label = tk.Label(self.main_frame, text="Portail de Paie", font=('Helvetica', 18))
         paie_label.pack(pady=20)
 
-    # Méthode pour afficher le contenu du portail Démission
-    def show_demission_portal(self):
+    # Méthode pour afficher le contenu du portail Affecter
+    def show_affecter_portal(self):
         self.clear_main_frame()
-        demission_label = tk.Label(self.main_frame, text="Portail de Démission", font=('Helvetica', 18))
-        demission_label.pack(pady=20)
+        affecter_label = tk.Label(self.main_frame, text="Portail d'Affectation", font=('Helvetica', 18))
+        affecter_label.pack(pady=20)
+
+    # Méthode pour afficher le contenu du portail Pointer
+    def show_pointer_portal(self):
+        self.clear_main_frame()
+        pointer_label = tk.Label(self.main_frame, text="Portail de Pointer", font=('Helvetica', 18))
+        pointer_label.pack(pady=20)
+
+    # Méthode pour afficher le contenu du portail Performance
+    def show_performance_portal(self):
+        self.clear_main_frame()
+        performance_label = tk.Label(self.main_frame, text="Portail de Performance", font=('Helvetica', 18))
+        performance_label.pack(pady=20)
+
+    # Méthode pour afficher le contenu du portail GRH
+    def show_grh_portal(self):
+        self.clear_main_frame()
+        grh_label = tk.Label(self.main_frame, text="Portail de GRH", font=('Helvetica', 18))
+        grh_label.pack(pady=20)
+
+    # Méthode pour afficher le contenu du portail Département
+    def show_departement_portal(self):
+        self.clear_main_frame()
+        DepartementGestFrontend(self.main_frame,self.conexion.get_curseur())
+    # Méthode pour afficher le contenu du portail Fonction
+    def show_fonction_portal(self):
+        self.clear_main_frame()
+        fonction_label = tk.Label(self.main_frame, text="Portail de Fonction", font=('Helvetica', 18))
+        fonction_label.pack(pady=20)
 
     # Méthode pour effacer le contenu précédent dans main_frame
     def clear_main_frame(self):
@@ -119,6 +168,3 @@ if __name__ == "__main__":
     root = tk.Tk()
     app = GRHManagementApp(root)
     root.mainloop()
-
-
-

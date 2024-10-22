@@ -34,6 +34,26 @@ class Agent:
             print("Données refusées:", self.nom_dom, self.sexe, self.date_naiss, self.lieu_naiss, self.etat_civil, self.adresse, self.nombre_enfant)
             showerror("Erreur", str(e))
             return False 
+    def update(self, curseur, id_agent):
+        try:
+            query = """
+            UPDATE Agent
+            SET nom = %s, sexe = %s, date_naissance = %s, lieu_naissance = %s, etat_civil = %s, adresse = %s, nombre_enfant = %s
+            WHERE id_agent = %s
+            """
+            curseur.execute(query, (self.nom_dom, self.sexe, self.date_naiss, self.lieu_naiss, self.etat_civil, self.adresse, self.nombre_enfant, id_agent))
+            return True
+        except Exception as e:
+            showerror("Erreur", str(e))
+            return False
+    def delete(self, curseur, id_agent):
+        try:
+            query = "DELETE FROM Agent WHERE id_agent = %s"
+            curseur.execute(query, (id_agent,))
+            return True
+        except Exception as e:
+            showerror("Erreur", str(e))
+            return False
 """    def update(self,curseur,id):
         try:
             curseur.execute("update domaine_cours set nom_dom=%s where id_dom=%s",(self.nom_dom,id))
