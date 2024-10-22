@@ -17,13 +17,23 @@ class Agent:
         except Exception as e:
             showerror("Erreur",str(e))
             return False
-    def save(self,curseur):
+        
+    def save(self, curseur):
         try:
-            curseur.execute("insert into agent(nom,sexe,date_naissance,lieu_naissance,etat_civil,adresse,nombre_enfant) values(%s,%s,%s,%s,%s,%s,%s)",(self.nom_dom,self.sexe,self.date_naiss,self.lieu_naiss,self.etat_civil,self.adresse,self.nombre_enfant))
+            # Requête d'insertion
+            query = """
+            INSERT INTO Agent (nom, sexe, date_naissance, lieu_naissance, etat_civil, adresse, nombre_enfant)
+            VALUES (%s, %s, %s, %s, %s, %s, %s)
+            """
+            # Exécution de la requête
+            curseur.execute(query, (self.nom_dom, self.sexe, self.date_naiss, self.lieu_naiss, self.etat_civil, self.adresse, self.nombre_enfant))
             return True
         except Exception as e:
-            showerror("Erreur",str(e))
-            return False
+            # Affichage de l'erreur et des données refusées
+            print("Erreur:", str(e))
+            print("Données refusées:", self.nom_dom, self.sexe, self.date_naiss, self.lieu_naiss, self.etat_civil, self.adresse, self.nombre_enfant)
+            showerror("Erreur", str(e))
+            return False 
 """    def update(self,curseur,id):
         try:
             curseur.execute("update domaine_cours set nom_dom=%s where id_dom=%s",(self.nom_dom,id))

@@ -62,10 +62,10 @@ class AgentGestFrontend:
 
         # Boutons
         self.Ajouter_btn = tk.Button(self.AgentSection, bg=self.succes_colors, text='AJOUTER', fg='white', relief="flat", font="Arial 9", command=self.ajouter_agent)
-        self.Ajouter_btn.place(x=400, y=270, width=100, height=30)
+        self.Ajouter_btn.place(x=200, y=270, width=100, height=30)
 
         self.Supprimer_btn = tk.Button(self.AgentSection, bg='red', text='SUPPRIMER', fg='white', relief="flat", font="Arial 9")
-        self.Supprimer_btn.place(x=510, y=270, width=100, height=30)
+        self.Supprimer_btn.place(x=310, y=270, width=100, height=30)
 
         # Section du tableau
         self.TabSection = tk.Frame(self.AgentSection, height=250, width=740, relief="groove")
@@ -74,7 +74,10 @@ class AgentGestFrontend:
         # Ajout des barres de défilement
         self.scroll_x = ttk.Scrollbar(self.TabSection, orient=tk.HORIZONTAL)
         self.scroll_y = ttk.Scrollbar(self.TabSection, orient=tk.VERTICAL)
-
+        self.Modifier_btn = tk.Button(self.AgentSection, bg='#4CAF50', text='MODIFIER', fg='white', relief="flat", font="Arial 9", command=self.modifier_agent)
+        self.Modifier_btn.place(x=420, y=270, width=100, height=30)
+        self.Imprimer_btn = tk.Button(self.AgentSection, bg='orange', text='IMPRIMER', fg='white', relief="flat", font="Arial 9", command=self.imprimer_agent)
+        self.Imprimer_btn.place(x=530, y=270, width=100, height=30)
         # Tableau avec colonnes
         self.tableau = ttk.Treeview(self.TabSection, columns=('N°','ID','Nom', 'Sexe', 'Date Naissance', 'Lieu Naissance', 'Etat Civil', 'Adresse', 'Enfants'), 
                                     show='headings', xscrollcommand=self.scroll_x.set, yscrollcommand=self.scroll_y.set)
@@ -101,12 +104,13 @@ class AgentGestFrontend:
         self.tableau.column('Enfants', width=80, anchor='center')
 
         # Placement du tableau et des barres de défilement
-        self.tableau.place(x=0, y=0, width=720, height=530)
-        self.scroll_x.place(x=0, y=530, width=720)
-        self.scroll_y.place(x=400, y=0, height=530)
+        self.tableau.place(x=0, y=0, width=720, height=220)
+        self.scroll_x.place(x=0, y=220, width=720)
+        self.scroll_y.place(x=720, y=0, height=220)
 
         self.scroll_x.config(command=self.tableau.xview)
         self.scroll_y.config(command=self.tableau.yview)
+        self.afficher()
 
     def ajouter_agent(self):
         # Récupérer les informations des champs
@@ -129,8 +133,14 @@ class AgentGestFrontend:
         except ValueError:
             showinfo('Erreur', 'Format de date incorrect (attendu : YYYY-MM-DD)')
             return
+        agent = Agent(nom, sexe, date_naissance, lieu_naissance, etat_civil, adresse, enfants)
+        if agent.save(self.curseur):
+            showinfo('Succès', 'Agent ajouté avec succès')
+            self.afficher()
+            self.clean()
+        
 
-    def cleam(self):
+    def clean(self):
         # Réinitialiser les champs
         self.NomEnt.delete(0, tk.END)
         self.SexeCombo.set('')
@@ -150,4 +160,71 @@ class AgentGestFrontend:
         for row in data:
             cpt += 1
             self.tableau.insert('', 'end', values=(cpt, row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7]))
+        
+        # Bind double click to get selected row data
         self.tableau.bind('<Double-Button-1>', self.get_selection)
+
+    def get_selection(self, event):
+        selected_item = self.tableau.selection()[0]
+        values = self.tableau.item(selected_item, 'values')
+
+        # Populate the form fields with the selected row's data
+        self.NomEnt.delete(0, tk.END)
+        self.NomEnt.insert(0, values[2])
+        self.SexeCombo.set(values[3])
+        self.DateNaissEnt.delete(0, tk.END)
+        self.DateNaissEnt.insert(0, values[4])
+        self.LieuNaissEnt.delete(0, tk.END)
+        self.LieuNaissEnt.insert(0, values[5])
+        self.EtatCivilCombo.set(values[6])
+        self.AdresseEnt.delete(0, tk.END)
+        self.AdresseEnt.insert(0, values[7])
+        self.EnfantsEnt.delete(0, tk.END)
+        self.EnfantsEnt.insert(0, values[8])
+   
+   # Méthode pour avoir les informations des entry et returner les valeurs sous forme de liste
+    def get_values(self):
+        nom = self.NomEnt.get()
+        sexe = self.SexeCombo.get()
+        date_naissance = self.DateNaissEnt.get()
+        lieu_naissance = self.LieuNaissEnt.get()
+        etat_civil = self.EtatCivilCombo.get()
+        adresse = self.AdresseEnt.get()
+        enfants = self.EnfantsEnt.get()
+
+        return [nom, sexe, date_naissance, lieu_naissance, etat_civil, adresse, enfants]
+   
+   
+   
+    # Méthode pour modifier un agent
+
+    def modifier_agent(self):
+        # Récupérer les informations des champs
+        nom, sexe, date_naissance, lieu_naissance, etat_civil, adresse, enfants = self.get_values()
+
+        # Validation simple
+        if not (nom and sexe and date_naissance and lieu_naissance and etat_civil and adresse and enfants):
+            showinfo('Erreur', 'Veuillez remplir tous les champs')
+            return
+
+        try:
+            # Vérifier la date
+            datetime.strptime(date_naissance, '%Y-%m-%d')
+        except ValueError:
+            showinfo('Erreur', 'Format de date incorrect (attendu : YYYY-MM-DD)')
+            return
+
+        # Récupérer l'ID de l'agent sélectionné
+        selected_item = self.tableau.selection()[0]
+        agent_id = self.tableau.item(selected_item, 'values')[1]
+
+        # Mettre à jour l'agent
+        assign = Agent(nom, sexe, date_naissance, lieu_naissance, etat_civil, adresse, enfants)
+        assign.update(agent_id, self.curseur)
+
+        # Afficher les agents
+        self.afficher()
+        self.clean()
+     # Méthode pour imprimer tous les agents
+    def imprimer_agent(self):
+        pass    
